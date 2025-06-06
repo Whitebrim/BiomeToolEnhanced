@@ -1,21 +1,20 @@
 import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 plugins {
     application
-    kotlin("jvm") version "1.9.21"
+    kotlin("jvm") version "2.1.21"
     id("org.openjfx.javafxplugin") version "0.1.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.gradleup.shadow") version "8.3.6"
 }
 
 var mainClassName: String by application.mainClass
 mainClassName = "com.dfsek.terra.biometool.BiomeToolLauncher"
 
 group = "com.dfsek"
-version = "0.4.8"
+version = "0.4.9"
 
 val runDir = file("$buildDir/run")
 
@@ -32,8 +31,8 @@ repositories {
 }
 
 java {
-    targetCompatibility = JavaVersion.VERSION_17
-    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 val javafxModules = listOf(
@@ -47,7 +46,7 @@ val javafxModules = listOf(
 )
 
 javafx {
-    version = "17.0.9"
+    version = "21.0.2"
     modules = javafxModules.map { "javafx.$it" }
 }
 
@@ -100,7 +99,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
 
-    val terraGitHash = "3aef97738"
+    val terraGitHash = "af9fb211a"
 
     bootstrapTerraAddon("com.dfsek.terra:api-addon-loader:0.1.0-BETA+$terraGitHash")
     bootstrapTerraAddon("com.dfsek.terra:manifest-addon-loader:1.0.0-BETA+$terraGitHash")
@@ -121,7 +120,7 @@ dependencies {
     terraAddon("com.dfsek.terra:config-feature:1.0.0-BETA+$terraGitHash")
     terraAddon("com.dfsek.terra:config-flora:1.0.1-BETA+$terraGitHash")
     terraAddon("com.dfsek.terra:config-locators:1.1.1-BETA+$terraGitHash")
-    terraAddon("com.dfsek.terra:config-noise-function:1.1.0-BETA+$terraGitHash")
+    terraAddon("com.dfsek.terra:config-noise-function:1.2.0-BETA+$terraGitHash")
     terraAddon("com.dfsek.terra:config-number-predicate:1.0.0-BETA+$terraGitHash")
     terraAddon("com.dfsek.terra:config-ore:1.1.1-BETA+$terraGitHash")
     terraAddon("com.dfsek.terra:config-palette:1.0.0-BETA+$terraGitHash")
@@ -141,21 +140,21 @@ dependencies {
     terraAddon("com.dfsek.terra:terrascript-function-sampler:1.0.0-BETA+$terraGitHash")
 
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
-    implementation("com.dfsek.terra:base:6.4.1-BETA+$terraGitHash")
+    implementation("com.dfsek.terra:base:6.6.2-BETA+$terraGitHash")
 
-    implementation("ca.solo-studios:slf4k:0.5.3")
+    implementation("ca.solo-studios:slf4k:0.5.4")
 
-    implementation("ch.qos.logback:logback-classic:1.4.14")
+    implementation("ch.qos.logback:logback-classic:1.5.18")
 
-    implementation("com.google.guava:guava:32.1.3-jre")
+    implementation("com.google.guava:guava:33.4.8-jre")
 
     implementation("no.tornado:tornadofx:1.7.20") {
         exclude("org.jetbrains.kotlin")
     }
 
-    implementation("commons-io:commons-io:2.15.1")
+    implementation("commons-io:commons-io:2.19.0")
 
     for (javafxModule in javafxModules) {
         val mavenCoordinates = "org.openjfx:javafx-$javafxModule:${javafx.version}"
@@ -166,7 +165,7 @@ dependencies {
     }
 
     // Jansi for terminal colouring on Windows
-    windowsImplementation("org.fusesource.jansi:jansi:2.4.1")
+    windowsImplementation("org.fusesource.jansi:jansi:2.4.2")
 }
 
 tasks.test {
@@ -174,7 +173,7 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "17"
+    kotlinOptions.jvmTarget = "21"
 }
 
 val jar by tasks.jar
@@ -191,12 +190,6 @@ tasks.withType<ShadowJar>() {
     from(sourceSets.main.orNull?.output)
     configurations.add(project.configurations.runtimeClasspath.orNull)
     exclude("META-INF/INDEX.LIST", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "module-info.class")
-
-    tasks.register<ConfigureShadowRelocation>(
-        ConfigureShadowRelocation.taskName(this)
-    ) {
-        this@withType.dependsOn(this)
-    }
 
     doFirst {
         archiveVersion.set(project.version.toString())
@@ -263,7 +256,7 @@ val downloadDefaultPacks: Task by tasks.creating() {
     group = "application"
 
     doFirst {
-        val defaultPack = URL("https://github.com/PolyhedralDev/TerraOverworldConfig/releases/download/latest/default.zip")
+        val defaultPack = URL("https://github.com/PolyhedralDev/TerraOverworldConfig/releases/download/v1.5.1/default.zip")
         val fileName = defaultPack.file.substring(defaultPack.file.lastIndexOf("/"))
 
         file("$runDir/packs/").mkdirs()

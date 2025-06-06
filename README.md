@@ -27,7 +27,7 @@ All of these files bundle the required javafx libraries, so you can run them wit
 
 Note: You **must** be using Java 17. It will not work with earlier versions.
 
-Use Java 17
+Use Java 21
 
 ## Screenshots
 
